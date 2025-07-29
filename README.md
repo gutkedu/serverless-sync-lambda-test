@@ -1,0 +1,1 @@
+# serverless-sync-lambda-test
