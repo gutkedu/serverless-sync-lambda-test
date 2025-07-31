@@ -15,7 +15,7 @@ Globals:
     Runtime: provided.al2023
     Architectures:
       - arm64
-    CodeUri: ./cmd/api
+    CodeUri: .
     Environment: 
       Variables:
         TABLE_NAME: !Ref TableName
@@ -25,7 +25,7 @@ Resources:
   GolangFunction:
     Type: AWS::Serverless::Function 
     Metadata:
-      BuildMethod: go1.x
+      BuildMethod: makefile
     Properties:
       Handler: bootstrap
       Events:
@@ -47,13 +47,13 @@ Resources:
 
 Outputs:
   GolangApi:
-    Description: "API Gateway endpoint URL for Prod environment for First Function"
+    Description: "API Gateway endpoint URL for Prod environment for GolangFunction"
     Value: !Sub "https://${GolangApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-  GolangFunction:
-    Description: "First Lambda Function ARN"
+  GolangFunctionArn:
+    Description: "Golang Lambda Function ARN"
     Value: !GetAtt GolangFunction.Arn
   GolangFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for GolangFunction"
     Value: !GetAtt GolangFunctionRole.Arn
 
 
