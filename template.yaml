@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Multi-Language Lambda Demo with Nested Stacks
+
+Resources:
+  # Shared Infrastructure Stack (DynamoDB & API Gateway)
+  DatabaseStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: db/template.yaml
+
+  GolangStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: golang/template.yaml
+      Parameters:
+        TableName: !GetAtt DatabaseStack.Outputs.TableName
+
+  NodejsStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: nodejs/template.yaml
+      Parameters:
+        TableName: !GetAtt DatabaseStack.Outputs.TableName
+
+  RustStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: rust/template.yaml
+      Parameters:
+        TableName: !GetAtt DatabaseStack.Outputs.TableName
+
+Outputs:
+  TableName:
+    Description: DynamoDB Table Name
+    Value: !GetAtt DatabaseStack.Outputs.TableName
+  RustApi:
+    Description: API Gateway endpoint URL for Prod stage for Rust function
+    Value: !GetAtt RustStack.Outputs.RustApi
+  NodejsApi:
+    Description: API Gateway endpoint URL for Prod stage for Nodejs function
+    Value: !GetAtt NodejsStack.Outputs.NodejsApi
+  GolangApi:
+    Description: API Gateway endpoint URL for Prod stage for Golang function
+    Value: !GetAtt GolangStack.Outputs.GolangApi

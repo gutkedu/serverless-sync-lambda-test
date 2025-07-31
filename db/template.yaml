@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  db
+
+Resources:
+  Table:
+    Type: AWS::Serverless::SimpleTable 
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+
+Outputs:
+  TableName:
+    Description: "DynamoDB table name"
+    Value: !Ref Table
+  TableArn:
+    Description: "DynamoDB table ARN"
+    Value: !GetAtt Table.Arn

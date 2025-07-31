@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  nodejs
+
+Parameters:
+  TableName:
+    Type: String
+    Description: DynamoDB table name
+
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 1024
+    Runtime: nodejs22.x
+    CodeUri: ./src
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TableName
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+Resources:
+  NodejsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Name: NodejsApi
+
+  NodejsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambdaHandler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /put
+            Method: POST
+            RestApiId: !Ref NodejsApi
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        EntryPoints:
+          - app.ts
+        External:
+          - '@aws-sdk/client-dynamodb'
+          - '@aws-sdk/lib-dynamodb'
+
+Outputs:
+  NodejsApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value: !Sub https://${NodejsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  NodejsFunction:
+    Description: Hello World Lambda Function ARN
+    Value: !GetAtt NodejsFunction.Arn
+  NodejsFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value: !GetAtt NodejsFunctionRole.Arn

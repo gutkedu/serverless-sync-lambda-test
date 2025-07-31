@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  golang
+
+Parameters:
+  TableName:
+    Type: String
+    Description: DynamoDB table name
+
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 1024
+    Runtime: provided.al2023
+    Architectures:
+      - arm64
+    CodeUri: ./cmd/api
+    Environment: 
+      Variables:
+        TABLE_NAME: !Ref TableName
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+Resources:
+  GolangFunction:
+    Type: AWS::Serverless::Function 
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      Handler: bootstrap
+      Events:
+        CatchAll:
+          Type: Api 
+          Properties:
+            Path: /put
+            Method: POST
+            RestApiId: !Ref GolangApi
+      Policies:
+        - DynamoDBCrudPolicy: 
+            TableName: !Ref TableName
+  GolangApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Name: GolangApi
+
+
+Outputs:
+  GolangApi:
+    Description: "API Gateway endpoint URL for Prod environment for First Function"
+    Value: !Sub "https://${GolangApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  GolangFunction:
+    Description: "First Lambda Function ARN"
+    Value: !GetAtt GolangFunction.Arn
+  GolangFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt GolangFunctionRole.Arn
+
+
+    
+
+

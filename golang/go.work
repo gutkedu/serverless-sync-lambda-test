@@ -1,0 +1,8 @@
+go 1.22
+
+use (
+	.
+// Add other module directories if you split your code
+// ./internal/store
+// ./cmd/api
+)
