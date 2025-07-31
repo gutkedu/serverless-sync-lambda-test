@@ -1,0 +1,19 @@
+{
+  "apis": [
+    {
+      "name": "golang",
+      "url": "https://yxj9z29h99.execute-api.us-east-1.amazonaws.com/Prod/put",
+      "enabled": true
+    },
+    {
+      "name": "nodejs",
+      "url": "https://m6k51eyvdh.execute-api.us-east-1.amazonaws.com/Prod/put",
+      "enabled": false
+    },
+    {
+      "name": "rust",
+      "url": "https://n1oed2qoah.execute-api.us-east-1.amazonaws.com/Prod/put",
+      "enabled": false
+    }
+  ]
+}
